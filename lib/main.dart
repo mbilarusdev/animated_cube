@@ -80,6 +80,7 @@ class CubeNotifier extends ChangeNotifier {
   /// Current cube alignment
   Alignment alignment = Alignment.center;
 
+  /// Equals true when cube in move
   bool inMove = false;
 
   /// Sets start position of cube

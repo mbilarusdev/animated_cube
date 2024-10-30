@@ -103,6 +103,7 @@ class CubeNotifier extends ChangeNotifier {
 
   /// Animate cube to right
   void goToRight() async {
+    inMove = true;
     alignment = Alignment.centerRight;
     _position = Offset(
       ((startPosition!.dx + AnimatedCube.width) * 2) - AnimatedCube.height,

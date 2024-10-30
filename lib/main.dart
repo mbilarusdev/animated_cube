@@ -25,35 +25,36 @@ class MainApp extends StatelessWidget {
           home: Scaffold(
             body: Stack(
               children: [
-                Positioned(
-                  bottom: 10.0,
-                  left: 10.0,
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      if (cubeInherited.alignment != Alignment.centerLeft)
-                        Padding(
-                          padding: const EdgeInsets.only(left: 8),
-                          child: TextButton(
-                            onPressed: () {
-                              cubeInherited.goToLeft();
-                            },
-                            child: const Text('Left'),
+                if (!cubeInherited.inMove)
+                  Positioned(
+                    bottom: 10.0,
+                    left: 10.0,
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        if (cubeInherited.alignment != Alignment.centerLeft)
+                          Padding(
+                            padding: const EdgeInsets.only(left: 8),
+                            child: TextButton(
+                              onPressed: () {
+                                cubeInherited.goToLeft();
+                              },
+                              child: const Text('Left'),
+                            ),
                           ),
-                        ),
-                      if (cubeInherited.alignment != Alignment.centerRight)
-                        Padding(
-                          padding: const EdgeInsets.only(left: 8),
-                          child: TextButton(
-                            onPressed: () {
-                              cubeInherited.goToRight();
-                            },
-                            child: const Text('Right'),
+                        if (cubeInherited.alignment != Alignment.centerRight)
+                          Padding(
+                            padding: const EdgeInsets.only(left: 8),
+                            child: TextButton(
+                              onPressed: () {
+                                cubeInherited.goToRight();
+                              },
+                              child: const Text('Right'),
+                            ),
                           ),
-                        ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
                 const AnimatedCube(),
               ],
             ),
@@ -79,6 +80,8 @@ class CubeNotifier extends ChangeNotifier {
   /// Current cube alignment
   Alignment alignment = Alignment.center;
 
+  bool inMove = false;
+
   /// Sets start position of cube
   void setStartPosition(Offset? position) {
     if (startPosition == null) {
@@ -88,19 +91,26 @@ class CubeNotifier extends ChangeNotifier {
   }
 
   /// Animate cube to left
-  void goToLeft() {
+  void goToLeft() async {
+    inMove = true;
     alignment = Alignment.centerLeft;
     _position = Offset(0, startPosition!.dy);
+    notifyListeners();
+    await Future.delayed(AnimatedCube.animationDuration);
+    inMove = false;
     notifyListeners();
   }
 
   /// Animate cube to right
-  void goToRight() {
+  void goToRight() async {
     alignment = Alignment.centerRight;
     _position = Offset(
       ((startPosition!.dx + AnimatedCube.width) * 2) - AnimatedCube.height,
       startPosition!.dy,
     );
+    notifyListeners();
+    await Future.delayed(AnimatedCube.animationDuration);
+    inMove = false;
     notifyListeners();
   }
 }
@@ -128,6 +138,9 @@ class AnimatedCube extends StatefulWidget {
 
   /// Height of cube
   static double get height => 100;
+
+  /// Duration of cube animation
+  static Duration get animationDuration => const Duration(seconds: 1);
 }
 
 class _AnimatedCubeState extends State<AnimatedCube> {
